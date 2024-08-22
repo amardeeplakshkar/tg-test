@@ -3,7 +3,6 @@
 import WebApp from '@twa-dev/sdk'
 import { useEffect, useState } from 'react'
 
-// Define the interface for user data
 interface UserData {
   id: number;
   first_name: string;
@@ -15,29 +14,65 @@ interface UserData {
 
 export default function Home() {
   const [userData, setUserData] = useState<UserData | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (WebApp.initDataUnsafe.user) {
-      setUserData(WebApp.initDataUnsafe.user as UserData)
+    // Check if we are in the browser
+    if (typeof window !== 'undefined') {
+      try {
+        const user = WebApp.initDataUnsafe.user
+        if (user) {
+          setUserData(user as UserData)
+        } else {
+          // Dummy data for testing
+          setUserData({
+            id: 1,
+            first_name: 'John',
+            last_name: 'Doe',
+            username: 'john_doe',
+            language_code: 'en',
+            is_premium: true,
+          })
+        }
+      } catch (err) {
+        setError('Failed to load user data')
+      }
     }
   }, [])
 
+  if (error) {
+    return <div className="text-red-500 text-center mt-4">Error: {error}</div>
+  }
+
   return (
-    <main className="p-4">
+    <main className="bg-gray-900 text-white p-6 min-h-screen flex items-center justify-center">
       {userData ? (
-        <>
-          <h1 className="text-2xl font-bold mb-4">User Data</h1>
-          <ul>
-            <li>ID: {userData.id}</li>
-            <li>First Name: {userData.first_name}</li>
-            <li>Last Name: {userData.last_name || 'N/A'}</li>
-            <li>Username: {userData.username || 'N/A'}</li>
-            <li>Language Code: {userData.language_code}</li>
-            <li>Is Premium: {userData.is_premium ? 'Yes' : 'No'}</li>
+        <div className="max-w-lg bg-gray-800 rounded-lg shadow-lg p-6 w-full">
+          <h1 className="text-3xl font-bold mb-6 text-center">Hukam's Telegram Mini App</h1>
+          <h3 className="text-2xl font-semibold mb-4">User Data</h3>
+          <ul className="space-y-2">
+            <li className="bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition duration-300">
+              <strong>ID:</strong> {userData.id}
+            </li>
+            <li className="bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition duration-300">
+              <strong>First Name:</strong> {userData.first_name}
+            </li>
+            <li className="bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition duration-300">
+              <strong>Last Name:</strong> {userData.last_name || 'N/A'}
+            </li>
+            <li className="bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition duration-300">
+              <strong>Username:</strong> {userData.username || 'N/A'}
+            </li>
+            <li className="bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition duration-300">
+              <strong>Language Code:</strong> {userData.language_code}
+            </li>
+            <li className="bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition duration-300">
+              <strong>Is Premium:</strong> {userData.is_premium ? 'Yes' : 'No'}
+            </li>
           </ul>
-        </>
+        </div>
       ) : (
-        <div>Loading...</div>
+        <div className="text-center text-lg">Loading...</div>
       )}
     </main>
   )
