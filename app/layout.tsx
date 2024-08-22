@@ -6,7 +6,7 @@ import Script from "next/script";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Hukam's Telegram Mini App",
+  title: 'Telegram Mini App',
   description: 'A simple Telegram Mini App using Next.js 14'
 };
 
