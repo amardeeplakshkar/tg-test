@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -28,10 +28,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, user });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Prisma Error:", error);
-
-    // Type-safe error handling for unknown errors
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json({ success: false, message: `Failed to save user data: ${errorMessage}` });
   }
