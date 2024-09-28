@@ -3,13 +3,11 @@ import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-// For POST requests
 export async function POST(request: Request) {
   try {
-    const body = await request.json(); // Parse the request body
+    const body = await request.json();
     const { id, first_name, last_name, username, language_code, is_premium } = body;
 
-    // Perform the upsert operation
     const user = await prisma.user.upsert({
       where: { id },
       update: {
@@ -30,14 +28,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, user });
-  } catch (error) {
-    // Check if the error is an instance of Error
-    let errorMessage = 'An unknown error occurred';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
+  } catch (error: unknown) {
+    console.error("Prisma Error:", error);
 
-    console.error(error);
-    return NextResponse.json({ success: false, message: 'Failed to save user data', error: errorMessage });
+    // Type-safe error handling for unknown errors
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    return NextResponse.json({ success: false, message: `Failed to save user data: ${errorMessage}` });
   }
 }
