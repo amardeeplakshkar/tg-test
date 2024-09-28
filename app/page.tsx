@@ -1,7 +1,6 @@
-'use client'
-
-import WebApp from '@twa-dev/sdk'
-import { useEffect, useState } from 'react'
+"use client"
+import WebApp from '@twa-dev/sdk';
+import { useEffect, useState } from 'react';
 
 interface UserData {
   id: number;
@@ -13,35 +12,53 @@ interface UserData {
 }
 
 export default function Home() {
-  const [userData, setUserData] = useState<UserData | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we are in the browser
+    const saveUserData = async (user: UserData) => {
+      try {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(user),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update user data');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
     if (typeof window !== 'undefined') {
       try {
-        const user = WebApp.initDataUnsafe.user
+        const user = WebApp.initDataUnsafe.user;
         if (user) {
-          setUserData(user as UserData)
+          setUserData(user as UserData);
+          saveUserData(user as UserData); // Call API to save user data
         } else {
-          // Dummy data for testing
-          setUserData({
+          const dummyUser = {
             id: 1,
             first_name: 'John',
             last_name: 'Doe',
             username: 'john_doe',
             language_code: 'en',
             is_premium: true,
-          })
+          };
+          setUserData(dummyUser);
+          saveUserData(dummyUser); // Call API to save dummy data
         }
       } catch (err) {
-        setError('Failed to load user data')
+        setError('Failed to load user data');
       }
     }
-  }, [])
+  }, []);
 
   if (error) {
-    return <div className="text-red-500 text-center mt-4">Error: {error}</div>
+    return <div className="text-red-500 text-center mt-4">Error: {error}</div>;
   }
 
   return (
@@ -75,5 +92,5 @@ export default function Home() {
         <div className="text-center text-lg">Loading...</div>
       )}
     </main>
-  )
+  );
 }
