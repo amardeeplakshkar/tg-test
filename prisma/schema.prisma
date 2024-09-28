@@ -1,17 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id           Int      @id @map("_id") @default(autoincrement())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId  // Use MongoDB's ObjectId
   first_name   String
   last_name    String?
   username     String?
   language_code String
-  is_premium   Boolean  @default(false)
+  is_premium   Boolean?
 }
