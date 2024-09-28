@@ -29,10 +29,14 @@ export default function Home() {
           throw new Error('Failed to update user data');
         }
       } catch (error) {
-        console.error('Error:', error);
+        if (error instanceof Error) {
+          console.error('Error:', error.message);
+        } else {
+          console.error('Unknown error:', error);
+        }
       }
     };
-
+  
     if (typeof window !== 'undefined') {
       try {
         const user = WebApp.initDataUnsafe.user;
@@ -52,7 +56,11 @@ export default function Home() {
           saveUserData(dummyUser); // Call API to save dummy data
         }
       } catch (err) {
-        setError('Failed to load user data');
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unknown error occurred');
+        }
       }
     }
   }, []);
